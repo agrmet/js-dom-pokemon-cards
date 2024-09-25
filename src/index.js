@@ -22,14 +22,35 @@ function createStatsCardElement(card) {
     return ul
 }
 
+function createAppearancesElement(card) {
+    let ul = document.createElement("ul")
+    ul.setAttribute("class", "card--appearance")
+    let h3 = document.createElement("h3")
+
+    h3.textContent = "Appeared in games:"
+    ul.appendChild(h3)
+
+    for (let i = 0; i < card.game_indices.length; i++) {
+        const element = card.game_indices[i];
+        
+        let li = document.createElement("li")
+        li.textContent = capitalizeFirstLetter(element.version.name)
+        ul.appendChild(li)
+        
+    }
+
+    return ul
+}
+
 function renderACard(card) {
     
     let element = document.createElement("li")
     let h2 = document.createElement("h2")
     const img = createImageElement(card)
-    const ul = createStatsCardElement(card)
+    const stats = createStatsCardElement(card)
+    const appearances = createAppearancesElement(card)
 
-    const name = card.name.charAt(0).toUpperCase() + card.name.slice(1)
+    const name = capitalizeFirstLetter(card.name)
 
     h2.setAttribute("class", "card--title")
     h2.textContent = name
@@ -37,10 +58,14 @@ function renderACard(card) {
     element.setAttribute("class", "card")
     element.appendChild(h2)
     element.appendChild(img)
-    element.appendChild(ul)
-
+    element.appendChild(stats)
+    element.appendChild(appearances)
 
     return element
+}
+
+function capitalizeFirstLetter(string) {
+    return string[0].toUpperCase() + string.slice(1)
 }
 
 function renderCards() {
