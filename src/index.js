@@ -1,4 +1,8 @@
 const cardListUI = document.querySelector(".cards")
+// This dict will store all the images each data entry has
+const imageDictionary = {}
+// This array of pointers (actually just numbers as indicies) will keep track on what image each card is pointing to right now. So that we can easily switch image in the dicitonary 
+let imagePointerDictionary = {}
 
 function createImageElement(card) {
     let image = document.createElement("img")
@@ -42,6 +46,19 @@ function createAppearancesElement(card) {
     return ul
 }
 
+function handleSwapImage(card) {
+    const cardUI = document.querySelector(`[data-id="${card.name}"]`);
+
+    console.log(imagePointerDictionary[card.name]);
+    
+    const imgElement = cardUI.querySelector("img");
+
+    imagePointerDictionary[card.name] = (imagePointerDictionary[card.name] + 1) % imageDictionary[card.name].length;
+
+    imgElement.src = imageDictionary[card.name][imagePointerDictionary[card.name]];
+}
+
+
 function renderACard(card) {
     
     let element = document.createElement("li")
@@ -55,6 +72,11 @@ function renderACard(card) {
     h2.setAttribute("class", "card--title")
     h2.textContent = name
 
+    element.addEventListener("click", () => {
+        handleSwapImage(card)
+    })
+
+    element.setAttribute("data-id", card.name)
     element.setAttribute("class", "card")
     element.appendChild(h2)
     element.appendChild(img)
@@ -68,13 +90,34 @@ function capitalizeFirstLetter(string) {
     return string[0].toUpperCase() + string.slice(1)
 }
 
+function addToImageArrays(card) {
+    const imageArray = []
+
+    function findImages(card) {
+        Object.values(card).forEach(value => {
+            if (typeof value === 'object' && value !== null) {
+                findImages(value);
+            } if (typeof value === 'string' && value.endsWith('.png')) {
+                imageArray.push(value);
+                
+            }
+        });
+    }
+
+    findImages(card);
+    imagePointerDictionary[card.name] = 0
+    imageDictionary[card.name] = imageArray
+}
+
 function renderCards() {
     for (let index = 0; index < data.length; index++) {
         const element = data[index];
         const elementUI = renderACard(element)
+        addToImageArrays(element)
         
         cardListUI.appendChild(elementUI)
     }
 }
 
 renderCards()
+console.log(imageDictionary);
